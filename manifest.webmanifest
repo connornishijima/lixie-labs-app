@@ -1,15 +1,15 @@
 {
-  "name": "Github Page PWA",
-  "short_name": "GPPWA",
+  "name": "Lixie Labs App",
+  "short_name": "LL App",
   "description": "Github Page as a Progressive Web App",
-  "scope": "/github-page-pwa/",
-  "start_url": "/github-page-pwa/",
+  "scope": "/lixie-labs-app/",
+  "start_url": "/lixie-labs-app/",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
   "display": "standalone", 
   "icons": [
       {
-        "src": "/github-page-pwa/img/icon.png",
+        "src": "/lixie-labs-app/img/icon.png",
         "type": "image/png",
         "sizes": "700x700"
       }

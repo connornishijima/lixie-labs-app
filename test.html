@@ -32,7 +32,7 @@
                 blue: document.getElementById('slider_canvas_blue')
             };
             const colors = ['red', 'green', 'blue'];
-            let last_y_position = 0;
+            let last_y_position = {};
 
             function set_canvas_size() {
                 Object.values(canvases).forEach(canvas => {
@@ -47,7 +47,7 @@
                 const color = canvas.id.replace('slider_canvas', '').toLowerCase();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = color;
-                ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
+                ctx.fillRect(0, 0, canvas.width, yPos);
             }
 
             function handle_event(e, eventType) {
@@ -55,13 +55,14 @@
                     const canvas = canvases[color];
                     if (eventType === 'start' && e.target === canvas) {
                         canvas.is_dragging = true;
-                        last_y_position = (e.touches ? e.touches[0].clientY : e.clientY);
+                        last_y_position[color] = (e.touches ? e.touches[0].clientY : e.clientY);
                     }
                     if (canvas.is_dragging) {
                         const current_y_position = (e.touches ? e.touches[0].clientY : e.clientY);
-                        const delta = last_y_position - current_y_position;
-                        last_y_position = current_y_position;
-                        let new_y_position = Math.min(canvas.height, Math.max(0, canvas.height - ((canvas.height - canvas.getBoundingClientRect().bottom + delta) % canvas.height)));
+                        const delta = last_y_position[color] - current_y_position;
+                        last_y_position[color] = current_y_position;
+
+                        let new_y_position = Math.max(0, Math.min(canvas.height, canvas.getBoundingClientRect().bottom - canvas.offsetTop + delta));
                         draw_slider(canvas, new_y_position);
                     }
                 });

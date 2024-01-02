@@ -18,12 +18,16 @@
     </style>
 </head>
 <body>
-    <canvas id="sliderCanvas" width="50" height="300"></canvas>
+    <canvas id="sliderCanvas"></canvas>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const canvas = document.getElementById('sliderCanvas');
             const ctx = canvas.getContext('2d');
             let isDragging = false;
+
+            // Set canvas dimensions
+            canvas.width = window.innerWidth / 3 * 0.9; // Slightly less than 1/3rd of screen width
+            canvas.height = window.innerHeight * 0.9; // 90% of screen height
 
             function drawSlider(yPos) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);

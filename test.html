@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Vertical Range Slider</title>
+    <title>Vertical Range Sliders</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             display: flex;
@@ -11,65 +12,66 @@
             margin: 0;
         }
 
-        #sliderCanvas {
+        .sliderCanvas {
             border: 1px solid #000;
             touch-action: none; /* Prevents default touch behavior, like scrolling */
+            width: 33%; /* Each canvas takes up one third of the screen width */
+            height: 90vh; /* 90% of the viewport height */
         }
     </style>
 </head>
 <body>
-    <canvas id="sliderCanvas"></canvas>
+    <canvas id="sliderCanvasRed" class="sliderCanvas"></canvas>
+    <canvas id="sliderCanvasGreen" class="sliderCanvas"></canvas>
+    <canvas id="sliderCanvasBlue" class="sliderCanvas"></canvas>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const canvas = document.getElementById('sliderCanvas');
-            const ctx = canvas.getContext('2d');
-            let isDragging = false;
+            const canvases = {
+                red: document.getElementById('sliderCanvasRed'),
+                green: document.getElementById('sliderCanvasGreen'),
+                blue: document.getElementById('sliderCanvasBlue')
+            };
+            const colors = ['red', 'green', 'blue'];
 
-            // Set canvas dimensions
-            canvas.width = window.innerWidth / 3 * 0.9; // Slightly less than 1/3rd of screen width
-            canvas.height = window.innerHeight * 0.9; // 90% of screen height
+            function setCanvasSize() {
+                Object.values(canvases).forEach(canvas => {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    drawSlider(canvas, canvas.height / 2); // Draw initial state at 50% height
+                });
+            }
 
-            function drawSlider(yPos) {
+            function drawSlider(canvas, yPos) {
+                const ctx = canvas.getContext('2d');
+                const color = canvas.id.replace('sliderCanvas', '').toLowerCase();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#007bff';
+                ctx.fillStyle = color;
                 ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
             }
 
-            canvas.addEventListener('mousedown', function (e) {
-                isDragging = true;
-                drawSlider(e.offsetY);
-            });
+            function handleEvent(e, eventType) {
+                colors.forEach(color => {
+                    const canvas = canvases[color];
+                    if (eventType === 'start' && e.target === canvas) {
+                        canvas.isDragging = true;
+                    }
+                    if (canvas.isDragging) {
+                        const rect = canvas.getBoundingClientRect();
+                        const yPos = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                        drawSlider(canvas, yPos);
+                    }
+                });
+            }
 
-            canvas.addEventListener('mousemove', function (e) {
-                if (isDragging) {
-                    drawSlider(e.offsetY);
-                }
-            });
+            window.addEventListener('resize', setCanvasSize);
+            setCanvasSize(); // Initial setup
 
-            document.addEventListener('mouseup', function () {
-                isDragging = false;
-            });
-
-            canvas.addEventListener('touchstart', function (e) {
-                isDragging = true;
-                let touch = e.touches[0];
-                let touchY = touch.clientY - canvas.getBoundingClientRect().top;
-                drawSlider(touchY);
-                e.preventDefault();
-            }, {passive: false});
-
-            canvas.addEventListener('touchmove', function (e) {
-                if (isDragging) {
-                    let touch = e.touches[0];
-                    let touchY = touch.clientY - canvas.getBoundingClientRect().top;
-                    drawSlider(touchY);
-                }
-                e.preventDefault();
-            }, {passive: false});
-
-            document.addEventListener('touchend', function () {
-                isDragging = false;
-            });
+            document.addEventListener('mousedown', e => handleEvent(e, 'start'));
+            document.addEventListener('mousemove', handleEvent);
+            document.addEventListener('mouseup', () => colors.forEach(color => canvases[color].isDragging = false));
+            document.addEventListener('touchstart', e => handleEvent(e, 'start'), {passive: false});
+            document.addEventListener('touchmove', handleEvent, {passive: false});
+            document.addEventListener('touchend', () => colors.forEach(color => canvases[color].isDragging = false));
         });
     </script>
 </body>

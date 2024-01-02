@@ -31,6 +31,10 @@
             const slider_positions = { red: 0.5, green: 0.5, blue: 0.5 };
             let last_touch_position = {};
 
+            setInterval(function(){
+              console.log(slider_positions);
+            }, 200);
+
             function set_canvas_size() {
                 Object.values(canvases).forEach(canvas => {
                     canvas.width = canvas.offsetWidth;

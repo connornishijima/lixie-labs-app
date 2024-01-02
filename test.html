@@ -33,6 +33,7 @@
             };
             const colors = ['red', 'green', 'blue'];
             const slider_positions = { red: 0.5, green: 0.5, blue: 0.5 };
+            let last_touch_position = {};
 
             function set_canvas_size() {
                 Object.values(canvases).forEach(canvas => {
@@ -43,11 +44,11 @@
                 });
             }
 
-            function draw_slider(canvas, color, yPos) {
+            function draw_slider(canvas, color, height) {
                 const ctx = canvas.getContext('2d');
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = color;
-                ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
+                ctx.fillRect(0, height, canvas.width, canvas.height - height);
             }
 
             function handle_event(e, eventType) {
@@ -55,13 +56,17 @@
                     const canvas = canvases[color];
                     if (eventType === 'start' && e.target === canvas) {
                         canvas.is_dragging = true;
+                        last_touch_position[color] = (e.touches ? e.touches[0].clientY : e.clientY);
                     }
                     if (canvas.is_dragging) {
-                        const rect = canvas.getBoundingClientRect();
-                        const yPos = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-                        const proportion = 1 - yPos / rect.height;
-                        slider_positions[color] = Math.max(0, Math.min(1, proportion));
-                        draw_slider(canvas, color, yPos);
+                        const current_touch_position = (e.touches ? e.touches[0].clientY : e.clientY);
+                        const delta = last_touch_position[color] - current_touch_position;
+                        last_touch_position[color] = current_touch_position;
+
+                        // Adjust the slider position proportionally
+                        const new_height = Math.max(0, Math.min(canvas.height, slider_positions[color] * canvas.height - delta));
+                        slider_positions[color] = new_height / canvas.height;
+                        draw_slider(canvas, color, new_height);
                     }
                 });
             }

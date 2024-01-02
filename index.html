@@ -31,11 +31,18 @@
             const slider_positions = { red: 0.5, green: 0.5, blue: 0.5 };
             let last_touch_position = {};
 
+            buzz_enabled = false;
+
             requestAnimationFrame(render_ui);
 
-            setInterval(function(){
-              play_pulse(5 + 95*slider_positions[1]);
-            }, 250);
+            function init_buzz(){
+              if(buzz_enabled == false){
+                buzz_enabled = true;
+                setInterval(function(){
+                  play_pulse(5 + 95*slider_positions[1]);
+                }, 250);
+              }
+            }
 
             function play_pulse(duration) {
                 // Check if the Vibration API is supported
@@ -98,6 +105,8 @@
             document.addEventListener('touchstart', e => handle_event(e, 'start'), {passive: false});
             document.addEventListener('touchmove', handle_event, {passive: false});
             document.addEventListener('touchend', () => colors.forEach(color => canvases[color].is_dragging = false));
+
+            document.addEventListener('touchstart', init_buzz);
         });
     
   </script>

@@ -1,22 +1,14 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     margin: 0;
-    padding: 2em;
-    height: 90vh;
-    background: url(../img/icon.png) 95% 95% no-repeat;
-    background-size: 20vh;
 }
-h1 {
-    font-size: 1.5em;
-    font-weight: normal;
-    margin: 0;
-    padding: 0;
-}
-p {
-    width: 80vw;
-}
-a {
-    color: #369;
+
+.slider_canvas {
+    border: 1px solid #000;
+    touch-action: none; /* Prevents default touch behavior, like scrolling */
+    width: 33%; /* Each canvas takes up one third of the screen width */
+    height: 90vh; /* 90% of the viewport height */
 }

@@ -32,22 +32,22 @@
                 blue: document.getElementById('slider_canvas_blue')
             };
             const colors = ['red', 'green', 'blue'];
-            let last_y_position = {};
+            const slider_positions = { red: 0.5, green: 0.5, blue: 0.5 };
 
             function set_canvas_size() {
                 Object.values(canvases).forEach(canvas => {
                     canvas.width = canvas.offsetWidth;
                     canvas.height = canvas.offsetHeight;
-                    draw_slider(canvas, canvas.height / 2); // Draw initial state at 50% height
+                    const color = canvas.id.replace('slider_canvas_', '');
+                    draw_slider(canvas, color, slider_positions[color] * canvas.height);
                 });
             }
 
-            function draw_slider(canvas, yPos) {
+            function draw_slider(canvas, color, yPos) {
                 const ctx = canvas.getContext('2d');
-                const color = canvas.id.replace('slider_canvas', '').toLowerCase();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = color;
-                ctx.fillRect(0, 0, canvas.width, yPos);
+                ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
             }
 
             function handle_event(e, eventType) {
@@ -55,15 +55,13 @@
                     const canvas = canvases[color];
                     if (eventType === 'start' && e.target === canvas) {
                         canvas.is_dragging = true;
-                        last_y_position[color] = (e.touches ? e.touches[0].clientY : e.clientY);
                     }
                     if (canvas.is_dragging) {
-                        const current_y_position = (e.touches ? e.touches[0].clientY : e.clientY);
-                        const delta = last_y_position[color] - current_y_position;
-                        last_y_position[color] = current_y_position;
-
-                        let new_y_position = Math.max(0, Math.min(canvas.height, canvas.getBoundingClientRect().bottom - canvas.offsetTop + delta));
-                        draw_slider(canvas, new_y_position);
+                        const rect = canvas.getBoundingClientRect();
+                        const yPos = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                        const proportion = 1 - yPos / rect.height;
+                        slider_positions[color] = Math.max(0, Math.min(1, proportion));
+                        draw_slider(canvas, color, yPos);
                     }
                 });
             }

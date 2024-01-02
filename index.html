@@ -3,21 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GitHub page as PWA template</title>
+  <title>Sensory Controller</title>
   <link rel="canonical" href="https://connornishijima.github.io/lixie-labs-app/" />
   <link rel="manifest" href="/lixie-labs-app/manifest.webmanifest">
   <link rel="stylesheet" href="css/styles.css">
+
+  <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .slider_canvas {
+            border: 1px solid #000;
+            touch-action: none; /* Prevents default touch behavior, like scrolling */
+            width: 33%; /* Each canvas takes up one third of the screen width */
+            height: 90vh; /* 90% of the viewport height */
+        }
+  </style>
 </head>
 <body>
- 
-  <h1>GitHub page as PWA template</h1>
-  <p>
-    This is a PWA template for GitHub pages. 
-    Make sure to check the README at 
-    <a href="https://github.com/connornishijima/lixie-labs-app/">https://github.com/codepo8/github-page-pwa/</a> and 
-    to change the necessary settings to your needs.
-  </p>
-
+  <canvas id="slider_canvas_red" class="slider_canvas"></canvas>
+    <canvas id="slider_canvas_green" class="slider_canvas"></canvas>
+    <canvas id="slider_canvas_blue" class="slider_canvas"></canvas>
+  
   <script>
       if (navigator.serviceWorker) {
         navigator.serviceWorker.register (
@@ -25,6 +37,64 @@
           {scope: '/lixie-labs-app/'}
         )
       }
+
+    document.addEventListener('DOMContentLoaded', function () {
+            const canvases = {
+                red: document.getElementById('slider_canvas_red'),
+                green: document.getElementById('slider_canvas_green'),
+                blue: document.getElementById('slider_canvas_blue')
+            };
+            const colors = ['red', 'green', 'blue'];
+            const slider_positions = { red: 0.5, green: 0.5, blue: 0.5 };
+            let last_touch_position = {};
+
+            function set_canvas_size() {
+                Object.values(canvases).forEach(canvas => {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    const color = canvas.id.replace('slider_canvas_', '');
+                    draw_slider(canvas, color, slider_positions[color] * canvas.height);
+                });
+            }
+
+            function draw_slider(canvas, color, height) {
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = color;
+                ctx.fillRect(0, height, canvas.width, canvas.height - height);
+            }
+
+            function handle_event(e, eventType) {
+                colors.forEach(color => {
+                    const canvas = canvases[color];
+                    if (eventType === 'start' && e.target === canvas) {
+                        canvas.is_dragging = true;
+                        last_touch_position[color] = (e.touches ? e.touches[0].clientY : e.clientY);
+                    }
+                    if (canvas.is_dragging) {
+                        const current_touch_position = (e.touches ? e.touches[0].clientY : e.clientY);
+                        const delta = last_touch_position[color] - current_touch_position;
+                        last_touch_position[color] = current_touch_position;
+
+                        // Adjust the slider position proportionally
+                        const new_height = Math.max(0, Math.min(canvas.height, slider_positions[color] * canvas.height - delta));
+                        slider_positions[color] = new_height / canvas.height;
+                        draw_slider(canvas, color, new_height);
+                    }
+                });
+            }
+
+            window.addEventListener('resize', set_canvas_size);
+            set_canvas_size(); // Initial setup
+
+            document.addEventListener('mousedown', e => handle_event(e, 'start'));
+            document.addEventListener('mousemove', handle_event);
+            document.addEventListener('mouseup', () => colors.forEach(color => canvases[color].is_dragging = false));
+            document.addEventListener('touchstart', e => handle_event(e, 'start'), {passive: false});
+            document.addEventListener('touchmove', handle_event, {passive: false});
+            document.addEventListener('touchend', () => colors.forEach(color => canvases[color].is_dragging = false));
+        });
+    
   </script>
   <script src="js/app.js"></script>
 </body>

@@ -33,6 +33,21 @@
 
             requestAnimationFrame(render_ui);
 
+            setInterval(function(){
+              play_pulse(5 + 95*slider_positions[1]);
+            }, 250);
+
+            function play_pulse(duration) {
+                // Check if the Vibration API is supported
+                if ("vibrate" in navigator) {
+                    // Vibrate the device for 20ms
+                    navigator.vibrate(duration);
+                } else {
+                    console.log("Vibration API is not supported on this device.");
+                }
+            }
+
+
             function render_ui(){
               console.log(slider_positions);
               requestAnimationFrame(render_ui);
@@ -63,7 +78,7 @@
                     }
                     if (canvas.is_dragging) {
                         const current_touch_position = (e.touches ? e.touches[0].clientY : e.clientY);
-                        const delta = (last_touch_position[color] - current_touch_position)*2.0;
+                        const delta = (last_touch_position[color] - current_touch_position)*1.0;
                         last_touch_position[color] = current_touch_position;
 
                         // Adjust the slider position proportionally

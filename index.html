@@ -49,6 +49,7 @@
                 if ("vibrate" in navigator) {
                     // Vibrate the device for 20ms
                     navigator.vibrate(duration);
+                    console.log("pulse");
                 } else {
                     console.log("Vibration API is not supported on this device.");
                 }

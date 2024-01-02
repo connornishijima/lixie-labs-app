@@ -4,6 +4,8 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    color:#fff;
+    background-color:#000;
 }
 
 .slider_canvas {

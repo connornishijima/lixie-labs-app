@@ -12,7 +12,7 @@
             margin: 0;
         }
 
-        .sliderCanvas {
+        .slider_canvas {
             border: 1px solid #000;
             touch-action: none; /* Prevents default touch behavior, like scrolling */
             width: 33%; /* Each canvas takes up one third of the screen width */
@@ -21,57 +21,61 @@
     </style>
 </head>
 <body>
-    <canvas id="sliderCanvasRed" class="sliderCanvas"></canvas>
-    <canvas id="sliderCanvasGreen" class="sliderCanvas"></canvas>
-    <canvas id="sliderCanvasBlue" class="sliderCanvas"></canvas>
+    <canvas id="slider_canvas_red" class="slider_canvas"></canvas>
+    <canvas id="slider_canvas_green" class="slider_canvas"></canvas>
+    <canvas id="slider_canvas_blue" class="slider_canvas"></canvas>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const canvases = {
-                red: document.getElementById('sliderCanvasRed'),
-                green: document.getElementById('sliderCanvasGreen'),
-                blue: document.getElementById('sliderCanvasBlue')
+                red: document.getElementById('slider_canvas_red'),
+                green: document.getElementById('slider_canvas_green'),
+                blue: document.getElementById('slider_canvas_blue')
             };
             const colors = ['red', 'green', 'blue'];
+            let last_y_position = 0;
 
-            function setCanvasSize() {
+            function set_canvas_size() {
                 Object.values(canvases).forEach(canvas => {
                     canvas.width = canvas.offsetWidth;
                     canvas.height = canvas.offsetHeight;
-                    drawSlider(canvas, canvas.height / 2); // Draw initial state at 50% height
+                    draw_slider(canvas, canvas.height / 2); // Draw initial state at 50% height
                 });
             }
 
-            function drawSlider(canvas, yPos) {
+            function draw_slider(canvas, yPos) {
                 const ctx = canvas.getContext('2d');
-                const color = canvas.id.replace('sliderCanvas', '').toLowerCase();
+                const color = canvas.id.replace('slider_canvas', '').toLowerCase();
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = color;
                 ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
             }
 
-            function handleEvent(e, eventType) {
+            function handle_event(e, eventType) {
                 colors.forEach(color => {
                     const canvas = canvases[color];
                     if (eventType === 'start' && e.target === canvas) {
-                        canvas.isDragging = true;
+                        canvas.is_dragging = true;
+                        last_y_position = (e.touches ? e.touches[0].clientY : e.clientY);
                     }
-                    if (canvas.isDragging) {
-                        const rect = canvas.getBoundingClientRect();
-                        const yPos = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-                        drawSlider(canvas, yPos);
+                    if (canvas.is_dragging) {
+                        const current_y_position = (e.touches ? e.touches[0].clientY : e.clientY);
+                        const delta = last_y_position - current_y_position;
+                        last_y_position = current_y_position;
+                        let new_y_position = Math.min(canvas.height, Math.max(0, canvas.height - ((canvas.height - canvas.getBoundingClientRect().bottom + delta) % canvas.height)));
+                        draw_slider(canvas, new_y_position);
                     }
                 });
             }
 
-            window.addEventListener('resize', setCanvasSize);
-            setCanvasSize(); // Initial setup
+            window.addEventListener('resize', set_canvas_size);
+            set_canvas_size(); // Initial setup
 
-            document.addEventListener('mousedown', e => handleEvent(e, 'start'));
-            document.addEventListener('mousemove', handleEvent);
-            document.addEventListener('mouseup', () => colors.forEach(color => canvases[color].isDragging = false));
-            document.addEventListener('touchstart', e => handleEvent(e, 'start'), {passive: false});
-            document.addEventListener('touchmove', handleEvent, {passive: false});
-            document.addEventListener('touchend', () => colors.forEach(color => canvases[color].isDragging = false));
+            document.addEventListener('mousedown', e => handle_event(e, 'start'));
+            document.addEventListener('mousemove', handle_event);
+            document.addEventListener('mouseup', () => colors.forEach(color => canvases[color].is_dragging = false));
+            document.addEventListener('touchstart', e => handle_event(e, 'start'), {passive: false});
+            document.addEventListener('touchmove', handle_event, {passive: false});
+            document.addEventListener('touchend', () => colors.forEach(color => canvases[color].is_dragging = false));
         });
     </script>
 </body>

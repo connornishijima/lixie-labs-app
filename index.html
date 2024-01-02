@@ -64,8 +64,8 @@
                         last_touch_position[color] = current_touch_position;
 
                         // Adjust the slider position proportionally
-                        const new_height = Math.max(0, Math.min(canvas.height, slider_positions[color] * canvas.height - delta));
-                        slider_positions[color] = new_height / canvas.height;
+                        const new_height = Math.max(0, Math.min(canvas.height, (1.0-slider_positions[color]) * canvas.height - delta));
+                        slider_positions[color] = 1.0 - (new_height / canvas.height);
                         draw_slider(canvas, color, new_height);
                     }
                 });

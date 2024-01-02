@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vertical Range Slider</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #sliderCanvas {
+            border: 1px solid #000;
+            touch-action: none; /* Prevents default touch behavior, like scrolling */
+        }
+    </style>
+</head>
+<body>
+    <canvas id="sliderCanvas" width="50" height="300"></canvas>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const canvas = document.getElementById('sliderCanvas');
+            const ctx = canvas.getContext('2d');
+            let isDragging = false;
+
+            function drawSlider(yPos) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#007bff';
+                ctx.fillRect(0, yPos, canvas.width, canvas.height - yPos);
+            }
+
+            canvas.addEventListener('mousedown', function (e) {
+                isDragging = true;
+                drawSlider(e.offsetY);
+            });
+
+            canvas.addEventListener('mousemove', function (e) {
+                if (isDragging) {
+                    drawSlider(e.offsetY);
+                }
+            });
+
+            document.addEventListener('mouseup', function () {
+                isDragging = false;
+            });
+
+            canvas.addEventListener('touchstart', function (e) {
+                isDragging = true;
+                let touch = e.touches[0];
+                let touchY = touch.clientY - canvas.getBoundingClientRect().top;
+                drawSlider(touchY);
+                e.preventDefault();
+            }, {passive: false});
+
+            canvas.addEventListener('touchmove', function (e) {
+                if (isDragging) {
+                    let touch = e.touches[0];
+                    let touchY = touch.clientY - canvas.getBoundingClientRect().top;
+                    drawSlider(touchY);
+                }
+                e.preventDefault();
+            }, {passive: false});
+
+            document.addEventListener('touchend', function () {
+                isDragging = false;
+            });
+        });
+    </script>
+</body>
+</html>

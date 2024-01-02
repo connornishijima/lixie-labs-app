@@ -60,7 +60,7 @@
                     }
                     if (canvas.is_dragging) {
                         const current_touch_position = (e.touches ? e.touches[0].clientY : e.clientY);
-                        const delta = last_touch_position[color] - current_touch_position;
+                        const delta = (last_touch_position[color] - current_touch_position)*2.0;
                         last_touch_position[color] = current_touch_position;
 
                         // Adjust the slider position proportionally

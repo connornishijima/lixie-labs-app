@@ -13,12 +13,18 @@
     <canvas id="slider_canvas_green" class="slider_canvas"></canvas>
     <canvas id="slider_canvas_blue" class="slider_canvas"></canvas>
   
+  <div id="debug"></div>
+  
   <script>
       if (navigator.serviceWorker) {
         navigator.serviceWorker.register (
           '/lixie-labs-app/sw.js',
           {scope: '/lixie-labs-app/'}
         )
+      }
+
+      function debug_print(input_text){
+        document.getElementById("debug").innerHTML = input_text;
       }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -49,15 +55,15 @@
                 if ("vibrate" in navigator) {
                     // Vibrate the device for 20ms
                     navigator.vibrate(duration);
-                    console.log("pulse");
+                    debug_print("pulse");
                 } else {
-                    console.log("Vibration API is not supported on this device.");
+                    debug_print("Vibration API is not supported on this device.");
                 }
             }
 
 
             function render_ui(){
-              console.log(slider_positions);
+              debug_print(slider_positions);
               requestAnimationFrame(render_ui);
             }
 

@@ -10,9 +10,10 @@
 </head>
 <body>
   <canvas id="slider_canvas_red" class="slider_canvas"></canvas>
-    <canvas id="slider_canvas_green" class="slider_canvas"></canvas>
-    <canvas id="slider_canvas_blue" class="slider_canvas"></canvas>
-  
+  <canvas id="slider_canvas_green" class="slider_canvas"></canvas>
+  <canvas id="slider_canvas_blue" class="slider_canvas"></canvas>
+  <br>
+  <br>
   <div id="debug"></div>
   
   <script>
@@ -55,7 +56,7 @@
                 if ("vibrate" in navigator) {
                     // Vibrate the device for 20ms
                     navigator.vibrate(duration);
-                    debug_print("pulse");
+                    debug_print("pulse @ "+performance.now());
                 } else {
                     debug_print("Vibration API is not supported on this device.");
                 }

@@ -112,7 +112,7 @@
             document.addEventListener('touchmove', handle_event, {passive: false});
             document.addEventListener('touchend', () => colors.forEach(color => canvases[color].is_dragging = false));
 
-            document.addEventListener('touchstart', init_buzz);
+            document.getElementById("slider_canvas_green").addEventListener('touchdown', init_buzz);
         });
     
   </script>
